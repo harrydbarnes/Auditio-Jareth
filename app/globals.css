@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-roboto);
+  --font-serif: var(--font-roboto-serif);
+  --font-slab: var(--font-roboto-slab);
+  --color-brat: #8cff00;
+}
+
+body {
+  @apply bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100;
+}

@@ -1,0 +1,5 @@
+{
+  "name": "Jareth",
+  "description": "A Granola-like meeting recorder with local storage, AI summaries, and live questioning.",
+  "requestFramePermissions": ["microphone", "camera", "display-capture"]
+}

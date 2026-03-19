@@ -3,8 +3,6 @@ const { createServer } = require('http');
 const { parse } = require('url');
 const next = require('next');
 const path = require('path');
-const serve = require('electron-serve');
-
 const port = 3000;
 const dev = false;
 const dir = path.join(__dirname, '..');
@@ -12,11 +10,19 @@ const dir = path.join(__dirname, '..');
 const nextApp = next({ dev, dir });
 const handle = nextApp.getRequestHandler();
 
-const loadURL = serve({ directory: path.join(__dirname, '../out') });
-
 let mainWindow;
+let loadURL;
 
-function createWindow() {
+const servePromise = (async () => {
+  if (app.isPackaged) {
+    const serveModule = await import('electron-serve');
+    const serve = serveModule.default;
+    loadURL = serve({ directory: path.join(__dirname, '../out') });
+  }
+})();
+
+async function createWindow() {
+  await servePromise;
   mainWindow = new BrowserWindow({
     width: 1280,
     height: 800,
@@ -45,7 +51,9 @@ function createWindow() {
   });
 }
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
+  await servePromise;
+
   ipcMain.handle('llm-request', async (event, args) => {
     try {
       const { provider, model, prompt, apiKey } = args;

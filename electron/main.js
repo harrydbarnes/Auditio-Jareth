@@ -21,8 +21,7 @@ const servePromise = (async () => {
   }
 })();
 
-async function createWindow() {
-  await servePromise;
+function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1280,
     height: 800,

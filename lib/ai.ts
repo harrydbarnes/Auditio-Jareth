@@ -11,23 +11,35 @@ async function callLLM(prompt: string, model: string, settings: Settings) {
     });
     return response.text || '';
   } else if (model.startsWith('gpt')) {
-    const res = await fetch('/api/llm', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ provider: 'openai', model, prompt, apiKey: settings.openaiKey })
-    });
-    const data = await res.json();
-    if (data.error) throw new Error(data.error);
-    return data.text;
+    if (typeof window !== 'undefined' && (window as any).electronAPI) {
+      const data = await (window as any).electronAPI.llmRequest({ provider: 'openai', model, prompt, apiKey: settings.openaiKey });
+      if (data.error) throw new Error(data.error);
+      return data.text;
+    } else {
+      const res = await fetch('/api/llm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ provider: 'openai', model, prompt, apiKey: settings.openaiKey })
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      return data.text;
+    }
   } else if (model.startsWith('claude')) {
-    const res = await fetch('/api/llm', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ provider: 'anthropic', model, prompt, apiKey: settings.anthropicKey })
-    });
-    const data = await res.json();
-    if (data.error) throw new Error(data.error);
-    return data.text;
+    if (typeof window !== 'undefined' && (window as any).electronAPI) {
+      const data = await (window as any).electronAPI.llmRequest({ provider: 'anthropic', model, prompt, apiKey: settings.anthropicKey });
+      if (data.error) throw new Error(data.error);
+      return data.text;
+    } else {
+      const res = await fetch('/api/llm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ provider: 'anthropic', model, prompt, apiKey: settings.anthropicKey })
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      return data.text;
+    }
   }
   return '';
 }
